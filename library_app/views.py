@@ -49,6 +49,14 @@ def reader_detail_view(request, reader_id):
         }
     )
 
+def reader_list_view(request):
+    readers = Reader.objects.all()
+    return render(
+        request,
+        'library_app/reader_list.html',
+        {'readers': readers}
+    )
+
 @api_view(['POST'])
 def create_loan(request):
     book_id = request.data.get('book_id')
