@@ -1,4 +1,7 @@
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.shortcuts import render
 from .models import Author, Reader, Book, Loan
 from .serializers import AuthorSerializer, ReaderSerializer, BookSerializer, LoanSerializer
 
@@ -25,3 +28,40 @@ class LoanViewSet(viewsets.ModelViewSet):
     serializer_class = LoanSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['book__title', 'reader__first_name', 'reader__last_name']
+
+def book_list_view(request):
+    books = Book.objects.all()
+    return render(
+        request, 
+        'library_app/book_list.html', 
+        {'books': books}
+    )
+
+def reader_detail_view(request, reader_id):
+    reader = Reader.objects.get(id=reader_id)
+    return render(
+        request,
+        'library_app/reader_detail.html',
+        {'reader': reader}
+    )
+
+@api_view(['POST'])
+def create_loan(request):
+    book_id = request.data.get('book_id')
+    reader_id = request.data.get('reader_id')
+    due_date = request.data.get('due_date')
+
+    try:
+        book = Book.objects.get(id=book_id)
+        reader = Reader.objects.get(id=reader_id)
+        loan = Loan.objects.create(
+            book=book,
+            reader=reader,
+            due_date=due_date
+        )
+        return Response(LoanSerializer(loan).data, status=status.HTTP_201_CREATED)
+    except Book.DoesNotExist:
+        return Response({'error': 'Book not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Reader.DoesNotExist:
+        return Response({'error': 'Reader not found'}, status=status.HTTP_404_NOT_FOUND)
+        

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reader Detail</title>
+</head>
+<body>
+    <h1>{{ reader.first_name }} {{ reader.last_name }}</h1>
+    <p>Email: {{ reader.email }}</p>
+    <p>Membership Date: {{ reader.membership_date }}</p>
+
+    <h2>Borrowed Books:</h2>
+    <ul>
+        {% for loan in loans %}
+            <li>
+                {{ loan.book.title }} - Borrowed at: {{ loan.borrowed_at }} 
+                {% if loan.due_date %} (Due: {{ loan.due_date }}) {% endif %}
+                {% if loan.returned %} (Returned) {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
