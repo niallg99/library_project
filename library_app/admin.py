@@ -15,4 +15,4 @@ class BookAdmin(admin.ModelAdmin):
 
 @admin.register(Loan)
 class LoanAdmin(admin.ModelAdmin):
-    list_display = ('book', 'reader', 'borrowed_at', 'due_date', 'returned')
+    list_display = ('book', 'reader', 'borrowed_at', 'due_date', 'returned', 'is_overdue')

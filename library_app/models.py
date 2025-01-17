@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 """
 Human model to store common fields for Author and Reader models
@@ -11,18 +12,22 @@ class Human(models.Model):
 
     class Meta:
         abstract = True
+    
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
 
 class Author(Human):
     bio = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return f'{self.full_name}'
 
 class Reader(Human):
     membership_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return f'{self.full_name}'
 
 class Book(models.Model):
     title = models.CharField(max_length=255)
@@ -46,5 +51,19 @@ class Loan(models.Model):
     due_date = models.DateTimeField(null=True, blank=True)
     returned = models.BooleanField(default=False)
 
+    def save(self, *args, **kwargs):
+        if not self.due_date:
+            self.due_date = self.borrowed_at + timedelta(days=30)
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f'{self.book.title} borrowed by {self.reader.first_name} {self.reader.last_name}'
+        return f'{self.book.title} borrowed by {self.reader.full_name} at {self.borrowed_at}'
+
+    @property
+    def is_overdue(self):
+        if self.returned:
+            return False
+        if self.due_date and timezone.now() > self.due_date:
+            return True
+        return False
+

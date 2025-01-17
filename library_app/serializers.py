@@ -25,10 +25,14 @@ class ReaderSerializer(serializers.ModelSerializer):
         fields = (
             'first_name',
             'last_name',
+            "full_name",
             'date_of_birth',
             'email',
             'membership_date',
         )
+    
+    def get_full_name(self, obj) -> str:
+        return f"{obj.first_name} {obj.last_name}"
 
 
 class BookSerializer(serializers.ModelSerializer):
