@@ -67,3 +67,15 @@ class Loan(models.Model):
             return True
         return False
 
+class BookRequest(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='requests')
+    reader = models.ForeignKey(Reader, on_delete=models.CASCADE, related_name='requests')
+    completed = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if Loan.objects.filter(book=self.book, returned=False).exists():
+            raise ValidationError('Book is already borrowed')
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'{self.book.title} requested by {self.reader.full_name}'

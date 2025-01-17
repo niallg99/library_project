@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Author, Reader, Book, Loan
+from .models import Author, Reader, Book, Loan, BookRequest
 
 class AuthorSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
@@ -61,4 +61,14 @@ class LoanSerializer(serializers.ModelSerializer):
             'borrowed_at',
             'due_date',
             'returned',
+        )
+
+class BookRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookRequest
+        fields = (
+            'id',
+            'book',
+            'reader',
+            'completed',
         )

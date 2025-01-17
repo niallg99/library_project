@@ -2,8 +2,8 @@ from rest_framework import viewsets, filters, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import render
-from .models import Author, Reader, Book, Loan
-from .serializers import AuthorSerializer, ReaderSerializer, BookSerializer, LoanSerializer
+from .models import Author, Reader, Book, Loan, BookRequest
+from .serializers import AuthorSerializer, ReaderSerializer, BookSerializer, LoanSerializer, BookRequestSerializer
 
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
@@ -40,21 +40,25 @@ def book_list_view(request):
 def reader_detail_view(request, reader_id):
     reader = Reader.objects.get(id=reader_id)
     loans = Loan.objects.filter(reader=reader)
+    book_requests = BookRequest.objects.filter(reader=reader)
+
     return render(
         request,
         'library_app/reader_detail.html',
         {
             'reader': reader,
-            'loans': loans
+            'loans': loans,
+            'book_requests': book_requests
         }
     )
 
 def reader_list_view(request):
     readers = Reader.objects.all()
+    book_requests = BookRequest.objects.filter(completed=False)
     return render(
         request,
         'library_app/reader_list.html',
-        {'readers': readers}
+        {'readers': readers, 'book_requests': book_requests}
     )
 
 @api_view(['POST'])
@@ -76,4 +80,21 @@ def create_loan(request):
         return Response({'error': 'Book not found'}, status=status.HTTP_404_NOT_FOUND)
     except Reader.DoesNotExist:
         return Response({'error': 'Reader not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+def request_book(request):
+    book_id = request.data.get('book_id')
+    reader_id = request.data.get('reader_id')
+
+    book = get_object_or_404(Book, id=book_id)
+    reader = get_object_or_404(Reader, id=reader_id)
+
+    if BookRequest.objects.filter(book=book, completed=False).exists():
+        return Response({'error': 'Book request already exists'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if Loan.objects.filter(book=book, returned=False).exists():
+        return Response({'error': 'Book is already on loan'}, status=status.HTTP_400_BAD_REQUEST)
+
+    book_request = BookRequest.objects.create(book=book, reader=reader)
+    return Response(BookRequestSerializer(book_request).data, status=status.HTTP_201_CREATED)
         

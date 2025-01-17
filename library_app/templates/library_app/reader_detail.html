@@ -19,5 +19,15 @@
             </li>
         {% endfor %}
     </ul>
+
+    <h2>Book Requests:</h2>
+    <ul>
+        {% for request in book_requests %}
+            <li>
+                {{ request.book.title }}
+                {% if request.completed %} (Completed) {% else %} (Pending) {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
 </body>
 </html>

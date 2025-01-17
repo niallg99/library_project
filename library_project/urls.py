@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from library_app.views import AuthorViewSet, ReaderViewSet, BookViewSet, LoanViewSet, book_list_view, create_loan, reader_detail_view, reader_list_view
+from library_app.views import AuthorViewSet, ReaderViewSet, BookViewSet, LoanViewSet, book_list_view, create_loan, reader_detail_view, reader_list_view, request_book
 
 router = routers.DefaultRouter()
 router.register(r'authors', AuthorViewSet)
@@ -32,4 +32,5 @@ urlpatterns = [
     path('api/create_loan/', create_loan, name='create_loan'),
     path('readers/', reader_list_view, name='reader_list'),
     path('reader/<int:reader_id>/', reader_detail_view, name='reader_detail'),
+    path('api/request_book/', request_book, name='request_book'),
 ]

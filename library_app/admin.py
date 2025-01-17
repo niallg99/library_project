@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Author, Reader, Book, Loan
+from .models import Author, Reader, Book, Loan, BookRequest
 
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
@@ -16,3 +16,8 @@ class BookAdmin(admin.ModelAdmin):
 @admin.register(Loan)
 class LoanAdmin(admin.ModelAdmin):
     list_display = ('book', 'reader', 'borrowed_at', 'due_date', 'returned', 'is_overdue')
+
+@admin.register(BookRequest)
+class BookRequestAdmin(admin.ModelAdmin):
+    list_display = ('book', 'reader', 'completed',)
+    list_filter = ('completed',)
