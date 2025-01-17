@@ -39,10 +39,14 @@ def book_list_view(request):
 
 def reader_detail_view(request, reader_id):
     reader = Reader.objects.get(id=reader_id)
+    loans = Loan.objects.filter(reader=reader)
     return render(
         request,
         'library_app/reader_detail.html',
-        {'reader': reader}
+        {
+            'reader': reader,
+            'loans': loans
+        }
     )
 
 @api_view(['POST'])

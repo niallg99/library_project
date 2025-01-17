@@ -3,11 +3,11 @@ from .models import Author, Reader, Book, Loan
 
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'email')
+    list_display = ('id', 'first_name', 'last_name', 'email')
 
 @admin.register(Reader)
 class ReaderAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'email', 'membership_date')
+    list_display = ('id', 'first_name', 'last_name', 'email', 'membership_date')
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
